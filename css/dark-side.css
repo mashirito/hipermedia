@@ -366,8 +366,10 @@ paper-item a{
 
 }
 
-.menubut{
-    width: 100%;
+#menubut{
+
+    float: right;
+    left: 90%;
 }
 
 .fotocover{
@@ -411,6 +413,7 @@ paper-item a{
     height: auto;
     margin: 0%;
     padding: 0%;
+    float: left;
 }
 
 .buttAtras{

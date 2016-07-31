@@ -18,238 +18,256 @@ function MusicRecommender() {
         pagesArtist.selected = tabsArtist.selected;
     });
 
+/////////////////////CREAMOS LA PLAYLIST/////////////////////////////
 
-function fetchArtistPlaylist(artist, wandering, variety) {
-    var url = config.echoNestHost + 'api/v4/playlist/static';
-    $("#all_resultsList").empty();
-    infoList("Creating the playlist ...");
-    $.getJSON(url, {
-            'artist': artist,
-            'api_key': config.apiKey,
-            'bucket': ['id:' + config.spotifySpace, 'tracks'], 'limit': true,
-            'variety': 1, 'results': 40
-        })
-        .done(function (data) {
-            infoList("");
-            if (!('songs' in data.response)) {
-                infoList("Can't find that artist");
-            } else {
-                var title = "Artist radio for " + artist;
-                console.log("aqui mirem la data del player",data.response.songs);
-                getSpotifyPlayer(data.response.songs, function (player) {
-                    console.log('got the player');
-                    $("#all_resultsList").append(player);
-                });
-            }
-        })
-        .error(function () {
-            infoList("Whoops, had some trouble getting that playlist");
-        });
-}
+    function fetchArtistPlaylist(artist, wandering, variety) {
+        var url = config.echoNestHost + 'api/v4/playlist/static';
+        $("#all_resultsList").empty();
+        infoList("Creating the playlist ...");
+        $.getJSON(url, {
+                'artist': artist,
+                'api_key': config.apiKey,
+                'bucket': ['id:' + config.spotifySpace, 'tracks'], 'limit': true,
+                'variety': 1, 'results': 40
+            })
+            .done(function (data) {
+                infoList("");
+                if (!('songs' in data.response)) {
+                    infoList("Can't find that artist");
+                } else {
 
-function newArtistList(artistName) {
-    if(!artistName) {
-        artistName = $("#artist").val();
+                    getSpotifyPlayer(data.response.songs, function (player) {
 
-    }
-
-    fetchArtistPlaylist(artistName, false, .2);
-}
-
-function infoList(txt) {
-    $("#infoList").text(txt);
-}
-
-function fetchSimilarArtists(artist, callback) {
-    var url = config.echoNestHost + 'api/v4/artist/similar';
-    $("#all_results").empty();
-    info("Getting similar artists ...");
-    $.getJSON(url, {
-            'api_key': config.apiKey,
-            'id': artist.id,
-            'bucket': ['id:' + config.spotifySpace],
-            'limit': true,
-        })
-        .done(function (data) {
-            info("");
-            if (data.response.status.code == 0 && data.response.artists.length > 0) {
-                callback(data.response.artists);
-            } else {
-                info("No similars for " + artist.name);
-            }
-        })
-        .error(function () {
-            info("Whoops, had some trouble getting that playlist");
-        });
-
-}
-
-function fetchSpotifyImagesForArtists(artists, callback) {
-    info("Fetching spotify images for artists ...");
-    console.log('fetchSpotifyImagesForArtists');
-    var fids = [];
-    artists.forEach(function (artist) {
-        fids.push(fidToSpid(artist.foreign_ids[0].foreign_id));
-    });
-
-    $.getJSON("https://api.spotify.com/v1/artists/", {'ids': fids.join(',')})
-        .done(function (data) {
-            data.artists.forEach(function (sartist, which) {
-                artists[which].spotifyArtistInfo = sartist;
-            });
-            callback(artists);
-        })
-        .error(function () {
-            info("Whoops, had some trouble getting that playlist");
-        });
-}
-
-function showArtists(seed, similars) {
-    info("");
-    console.log('show artists', seed, similars);
-    showSimilars(seed, similars);
-}
-
-function showSimilars(seed, similars) {
-    var div = $("<div>");
-
-    div.addClass('similars');
-    similars.forEach(function (similar) {
-
-        var simDiv = getArtistDiv(similar);
-        if (simDiv) {
-            div.append(simDiv);
-        }
-    });
-    $("#all_results").append(div);
-}
-
-function getArtistDiv(artist) {
-    var image = getBestImage(artist.spotifyArtistInfo.images, 350);
-
-    if (image) {
-        var adiv = $("<paper-button>");
-        adiv.addClass("customCardPlaylists");
-
-        var updiv = $("<paper-card>");
-        updiv.addClass("customCardP");
-
-        updiv.attr('id', 'Boxes');
-
-        var imgContenidor = $("<div>");
-        imgContenidor.addClass('cropPlaylists');
-
-        var img = $("<img>");
-        img.attr('src', image.url);
-        img.attr('align', "middle");
-
-        img.addClass('imatgeArtista');
-
-        imgContenidor.append(img);
-        updiv.append(imgContenidor);
-
-        var title = $("<div>").text(artist.name);
-        var artistId = artist.spotifyArtistInfo.id;
-        title.addClass('card-content');
-        updiv.append(title);
-        adiv.append(updiv);
-
-        adiv.on('click', function () {
-            var artist_name = title.text();
-            carregaArtista(artist_name, artistId);
-            //newArtistList(artist_name);
-
-            $('#nomArtista').text(artist_name);
-            $('#nomArtistaPestanya').text(artist_name);
-        });
-        return adiv;
-    } else {
-        return null;
-    }
-
-}
-
-function getBestImage(images, minSize) {
-    var best = null;
-    if (images.length > 0) {
-        best = images[0];
-        images.forEach(
-            function (image) {
-                if (image.width >= minSize) {
-                    best = image;
+                        $("#all_resultsList").append(player);
+                    });
                 }
-            }
-        );
+            })
+            .error(function () {
+                infoList("Whoops, had some trouble getting that playlist");
+            });
     }
-    return best;
-}
 
-function searchArtist(name, callback) {
-    var url = config.echoNestHost + 'api/v4/artist/search';
-    $("#all_results").empty();
-    info("Searching for artists ...");
-    $.getJSON(url, {
-            'api_key': config.apiKey,
-            'name': name,
-            'bucket': ['id:' + config.spotifySpace],
-            'limit': true,
-        })
-        .done(function (data) {
-            info("");
-            callback(data);
-        })
-        .error(function () {
-            info("Whoops, had some trouble finding that artist");
+    function newArtistList(artistName) {
+        if(!artistName) {
+            artistName = $("#artist").val();
+        }
+        fetchArtistPlaylist(artistName, false, .2);
+    }
+
+    function infoList(txt) {
+        $("#infoList").text(txt);
+    }
+
+/////////////////////FIN DE LA PLAYLIST/////////////////////////////
+
+/////////////////////BUSCAMOS LOS ARTISTAS SIMILARES/////////////////////////////
+
+    function fetchSimilarArtists(artist, callback) {
+        var url = config.echoNestHost + 'api/v4/artist/similar';
+        $("#all_results").empty();
+        info("Getting similar artists ...");
+        $.getJSON(url, {
+                'api_key': config.apiKey,
+                'id': artist.id,
+                'bucket': ['id:' + config.spotifySpace],
+                'limit': true,
+            })
+            .done(function (data) {
+                info("");
+                if (data.response.status.code == 0 && data.response.artists.length > 0) {
+                    callback(data.response.artists);
+                } else {
+                    info("No similars for " + artist.name);
+                }
+            })
+            .error(function () {
+                info("Whoops, had some trouble getting that playlist");
+            });
+
+    }
+
+/////////////////////BUSCAMOS LAS IMAGENES DE ARTISTAS SIMILARES/////////////////////////////
+    function fetchSpotifyImagesForArtists(artists, callback) {
+        info("Fetching spotify images for artists ...");
+
+        var fids = [];
+        artists.forEach(function (artist) {
+            fids.push(fidToSpid(artist.foreign_ids[0].foreign_id));
         });
-}
 
-function newArtist(artist_name) {
+        $.getJSON("https://api.spotify.com/v1/artists/", {'ids': fids.join(',')})
+            .done(function (data) {
+                data.artists.forEach(function (sartist, which) {
+                    artists[which].spotifyArtistInfo = sartist;
+                });
+                callback(artists);
+            })
+            .error(function () {
+                info("Whoops, had some trouble getting that playlist");
+            });
+    }
 
-    searchArtist(artist_name, function (data) {
+    function showArtists(seed, similars) {
+        info("");
+        showSimilars(seed, similars);
+    }
 
-        if (data.response.status.code == 0 && data.response.artists.length > 0) {
-            var seed = data.response.artists[0];
+    function showSimilars(seed, similars) {
+        var div = $("<div>");
 
-            fetchSpotifyImagesForArtists([seed], function (seeds) {
-                fetchSimilarArtists(seeds[0], function (similars) {
-                    fetchSpotifyImagesForArtists(similars, function (similars) {
-                        showArtists(seed, similars);
+        div.addClass('similars');
+        similars.forEach(function (similar) {
+
+            var simDiv = getArtistDiv(similar);
+            if (simDiv) {
+                div.append(simDiv);
+            }
+        });
+        $("#all_results").append(div);
+    }
+
+/////////////////////CREAMOS LA BOXES DONDE INTRODUCIR LOS ARTISTAS SIMILARES/////////////////////////////
+
+    function getArtistDiv(artist) {
+        var image = getBestImage(artist.spotifyArtistInfo.images, 350);
+
+        if (image) {
+            var adiv = $("<paper-button>");
+            adiv.addClass("customCardPlaylists");
+
+            var updiv = $("<paper-card>");
+            updiv.addClass("customCardP");
+
+            updiv.attr('id', 'Boxes');
+
+            var imgContenidor = $("<div>");
+            imgContenidor.addClass('cropPlaylists');
+
+            var img = $("<img>");
+            img.attr('src', image.url);
+            img.attr('align', "middle");
+
+            img.addClass('imatgeArtista');
+
+            imgContenidor.append(img);
+            updiv.append(imgContenidor);
+
+            var title = $("<div>").text(artist.name);
+            var artistId = artist.spotifyArtistInfo.id;
+            title.addClass('card-content');
+            updiv.append(title);
+            adiv.append(updiv);
+
+            adiv.on('click', function () {
+                var artist_name = title.text();
+                carregaArtista(artist_name, artistId);
+                //newArtistList(artist_name);
+
+                $('#nomArtista').text(artist_name);
+                $('#nomArtistaPestanya').text(artist_name);
+            });
+            return adiv;
+        } else {
+            return null;
+        }
+
+    }
+
+/////////////////////BUSCAMOS LA MEJOR IMAGEN PARA NUESTRA RESOLUCIÓN/////////////////////////////
+
+    function getBestImage(images, minSize) {
+        var best = null;
+        if (images.length > 0) {
+            best = images[0];
+            images.forEach(
+                function (image) {
+                    if (image.width >= minSize) {
+                        best = image;
+                    }
+                }
+            );
+        }
+        return best;
+    }
+
+/////////////////////QUERY QUE NOS DEVUELVE EL ARTISTA BUSCADO/////////////////////////////
+
+    function searchArtist(name, callback) {
+        var url = config.echoNestHost + 'api/v4/artist/search';
+        $("#all_results").empty();
+        info("Searching for artists ...");
+        $.getJSON(url, {
+                'api_key': config.apiKey,
+                'name': name,
+                'bucket': ['id:' + config.spotifySpace],
+                'limit': true,
+            })
+            .done(function (data) {
+                info("");
+                callback(data);
+            })
+            .error(function () {
+                info("Whoops, had some trouble finding that artist");
+            });
+    }
+
+/////////////////////LLAMADA PRINCIPAL QUE NOS DEVUELVE LOS ARTISTAS SIMILARES/////////////////////////////
+
+    function newArtist(artist_name) {
+
+        searchArtist(artist_name, function (data) {
+
+            if (data.response.status.code == 0 && data.response.artists.length > 0) {
+                var seed = data.response.artists[0];
+
+                fetchSpotifyImagesForArtists([seed], function (seeds) {
+                    fetchSimilarArtists(seeds[0], function (similars) {
+                        fetchSpotifyImagesForArtists(similars, function (similars) {
+                            showArtists(seed, similars);
+                        });
                     });
                 });
-            });
-        } else {
-            info("Can't find that artist");
-        }
+            } else {
+                info("Can't find that artist");
+            }
 
-    });
-}
+        });
+    }
 
-function info(txt) {
-    $("#info").text(txt);
-}
+/////////////////////FIN DE LOS ARTISTAS SIMILARES/////////////////////////////
 
-function search() {
-    $("#artist").on('keydown', function (e) {
+    function info(txt) {
+        $("#info").text(txt);
+    }
 
-        if (e.keyCode == 13) {
-            e.preventDefault();
-            newArtistList();
+/////////////////////CONTROL DE EVENTOS DE BÚSQUEDA/////////////////////////////
+
+    function search() {
+        $("#artist").on('keydown', function (e) {
+
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                newArtistList();
+                carrega();
+            }
+        });
+        $("#go").on("click", function () {
+
             carrega();
-        }
+            newArtistList();
+        });
+
+    }
+
+////////////////////INICIALIZACIÓN PRINCIPAL/////////////////////////////
+
+    $(document).ready(function () {
+        search();
+        carregaHome();
+
     });
-    $("#go").on("click", function () {
 
-        carrega();
-        newArtistList();
-    });
-
-}
-
-$(document).ready(function () {
-    search();
-    carregaHome();
-
-});
+////////////////////EVENTO PARA EL BOTON DE VER MAS.. EN LA BIO DEL ARTISTA/////////////////////////////
 
     $("#toggle").on("click", function _toggle() {
             var moreInfo = document.getElementById('more-info');
@@ -259,6 +277,9 @@ $(document).ready(function () {
             moreInfo.toggle();
 
     });
+
+/////////////////////PROCEDIMIENTO UNA VEZ SELECIONAMOS A UN ARTISTA DONDE SE REALIZAN LAS 3 QUERIES PARA LA BIO, PLAYLISTS, LOS TOP TRACKS, ÁLBUMES Y SINGLES////////////////////////////
+/////////////////////a MEDIDA QUE REALIZAMOS LAS QUERIES RELLENAMOS EL CONTENIDO ////////////////////////////
 
     function carregaArtista(artist_name, artistId){
 
@@ -282,6 +303,7 @@ $(document).ready(function () {
 
         newArtist(artist_name);
 
+        /////////////////////QUERY PARA LA INFO DEL ARTISTA /////////////////////////////
         $.ajax({
             type : 'POST',
             url : 'http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist='+artist_name+'&format=json&api_key=2c1097b083f04b0ceafc164bb142a27a',
@@ -290,7 +312,7 @@ $(document).ready(function () {
             'format=json',
             dataType : 'jsonp',
             success : function(data) {
-                console.log('eeeeeeoooooo', data);
+
                 var infoArtist = data.artist;
 
                 $("#infoArtist").empty();
@@ -300,6 +322,7 @@ $(document).ready(function () {
             }
         });
 
+        /////////////////////QUERY PARA LOS TOP TRACKS /////////////////////////////
         $.ajax({
             url: sGetItemTopTracks,
             dataType: "json",
@@ -311,7 +334,7 @@ $(document).ready(function () {
                 $tracksSelect.empty();
                 $.each(aTracks, function (index, value) {
                     oCurrentTrack = value;
-                    console.log("top tracks", oCurrentTrack );
+
                     var image =  getBestImage(oCurrentTrack.album.images, 350);
                     if (image) {
 
@@ -343,7 +366,7 @@ $(document).ready(function () {
                             $(".sp-player").remove();
                             insertarPlaylist(tracking.id,tracking, tracking.artists[0].name, image.url, oCurrentTrack.album.name, null);
                             getPlayerNormal(tracking, null, tracking.album.name, null, function (player) {
-                             console.log('got the player');
+
                              $("#all_resultsList").append(player);
                              });
                         });
@@ -356,6 +379,7 @@ $(document).ready(function () {
             }
         });
 
+        /////////////////////QUERY PARA LOS ÁLBUMES Y SINGLES /////////////////////////////
         $.ajax({
             url: sGetItemAlbus,
             dataType: "json",
@@ -428,6 +452,7 @@ $(document).ready(function () {
             }
         });
 
+        /////////////////////QUERY LAS PLAYLISTS RELACIONADAS CON EL ARTISTA /////////////////////////////
         $.ajax({
             url: sGetItem,
             dataType: "json",
@@ -439,7 +464,7 @@ $(document).ready(function () {
                 $("#lists").empty();
                 $.each(aPlayList, function (index, value) {
                     oCurrentPList = value;
-                    console.log("Play lists", oCurrentPList );
+
                     var image =  getBestImage(oCurrentPList.images, 350);
                     if (image) {
 
@@ -472,6 +497,9 @@ $(document).ready(function () {
         });
     }
 
+    /////////////////////PROCEDIMIENTO QUE CARGA EN EL MOMENTO DE BUSCAR UN ARTISTA, //////////////////////
+    // ESTE NOS DA TODOS LOS ARTISTAS QUE COINCIDEN CON LA BÚSQUEDA, ÁLBUMES Y TRACKS /////////////////////
+
     function carrega() {
 
         var $artistsSelect = $("#artists");
@@ -491,6 +519,7 @@ $(document).ready(function () {
         $('#search').show();
         $('#searchArtist').hide();
 
+        /////////////////////QUERY ARTISTAS RELACIONADOS CON EL NOMBRE DE BÚSQUEDA /////////////////////////////
         $.ajax({
             url: sGetItem,
             dataType: "json",
@@ -505,7 +534,7 @@ $(document).ready(function () {
                 $.each(aArtists, function (index, value) {
                     oCurrentArtist = value;
 
-                    console.log('mirant', oDataReceived);
+
                     var image =  getBestImage(oCurrentArtist.images, 350);
                     if (image) {
 
@@ -538,7 +567,7 @@ $(document).ready(function () {
                         adiv.on("click", function () {
                             var artist_name = title.text();
                             carregaArtista(artist_name, artistId);
-                            //newArtistList(artist_name);
+
                             $('#nomArtista').text(artist_name);
                             $('#nomArtistaPestanya').text(artist_name);
                         });
@@ -550,6 +579,7 @@ $(document).ready(function () {
             }
         });
 
+        /////////////////////QUERY ÁLBUMES RELACIONADOS CON EL NOMBRE DE BÚSQUEDA /////////////////////////////
         $.ajax({
             url: sGetItem,
             dataType: "json",
@@ -607,6 +637,7 @@ $(document).ready(function () {
             }
         });
 
+        /////////////////////QUERY CANCIONES RELACIONADAS CON EL NOMBRE DE BÚSQUEDA /////////////////////////////
         $.ajax({
             url: sGetItem,
             dataType: "json",
@@ -651,7 +682,7 @@ $(document).ready(function () {
                             $(".sp-player").remove();
                             insertarPlaylist(tracking.id,tracking, tracking.artists[0].name, image.url, oCurrentTrack.album.name, null);
                             getPlayerNormal(tracking, null, oCurrentTrack.album.name, null, function (player) {
-                                console.log('got the player');
+
                                 $("#all_resultsList").append(player);
                             });
                         });
@@ -665,11 +696,14 @@ $(document).ready(function () {
         });
     }
 
-    function carregaHome(){
+    /////////////////////PROCEDIMIENTO QUE CARGA LOS TOP TRACKS NACIONALES, LOS TOP ARTISTAS, Y LOS TOP ÁLBUMES DE ROCK, AL ENTRAR EN LA WEB //////////////////////
+    ///////////////////// 3 QUERIES Y LA POSTERIOR CARGA EN LAS BOXES DEL CONTENIDO /////////////////////
 
+    function carregaHome(){
 
         var $trackTopHome = $("#Release");
 
+        /////////////////////QUERY CANCIONES TOP NACIONALES/////////////////////////////
         $.ajax({
             type : 'POST',
             url : 'http://ws.audioscrobbler.com/2.0/?method=geo.gettoptracks&country=spain&limit=5&format=json&api_key=2c1097b083f04b0ceafc164bb142a27a',
@@ -678,7 +712,7 @@ $(document).ready(function () {
             'format=json',
             dataType : 'jsonp',
             success : function(data) {
-                console.log("TopHomeTracks",data);
+
                 var topTrack = data.tracks.track;
                 var oCurrentTrack;
                 var sOptions = $("<div>");
@@ -686,7 +720,7 @@ $(document).ready(function () {
                 $("#Release").empty();
                 $.each(topTrack, function (index, value) {
                     oCurrentTrack = value;
-                    console.log('mirant', data);
+
                     var image =  oCurrentTrack.image[2]["#text"];
                     if (image) {
                         var updiv = $("<paper-button>");
@@ -725,7 +759,7 @@ $(document).ready(function () {
                             $(".sp-player").remove();
                             insertarPlaylist(tracking.id,tracking, tracking.artists[0].name, getBestImage(tracking.album.images, 300).url, tracking.album.name, null);
                             getPlayerNormal(tracking, null, tracking.album.name, null, function (player) {
-                                console.log('got the player');
+
                                 $("#all_resultsList").append(player);
                             });
                         });
@@ -738,6 +772,7 @@ $(document).ready(function () {
             }
         });
 
+        /////////////////////QUERY ARTISTAS TOP /////////////////////////////
         var $artistTopHome = $('#artistTop');
         $.ajax({
             type : 'POST',
@@ -747,8 +782,7 @@ $(document).ready(function () {
             'format=json',
             dataType : 'jsonp',
             success: function (data) {
-                console.log(data);
-                console.log("eeeeieieiiieieiei");
+
                 var topArtist = data.topartists.artist;
                 var oCurrentArtist;
                 var sOptions = $("<div>");
@@ -756,7 +790,7 @@ $(document).ready(function () {
                 $artistTopHome.empty();
                 $.each(topArtist, function (index, value) {
                     oCurrentArtist = value;
-                    console.log('mirant', data);
+
                     var image =  oCurrentArtist.image[3]["#text"];
                     if (image) {
 
@@ -810,6 +844,7 @@ $(document).ready(function () {
 
         var $discoTopHome = $("#recom");
 
+        /////////////////////QUERY ÁLBUMES DE ROCK TOP /////////////////////////////
         $.ajax({
             type : 'POST',
             url : 'http://ws.audioscrobbler.com/2.0/?method=tag.gettopalbums&tag=rock&limit=5&format=json&api_key=2c1097b083f04b0ceafc164bb142a27a',
@@ -819,7 +854,7 @@ $(document).ready(function () {
             'format=json',
             dataType : 'jsonp',
             success: function (data) {
-                console.log(data);
+
                 var newRelease = data.albums.album;
                 var oCurrentRelease;
                 var sOptions = $("<div>");
@@ -827,7 +862,7 @@ $(document).ready(function () {
                 $("#recom").empty();
                 $.each(newRelease, function (index, value) {
                     oCurrentRelease = value;
-                    console.log('mirant', data);
+
                     var image =  oCurrentRelease.image[3]["#text"];
                     if (image) {
 
@@ -859,7 +894,6 @@ $(document).ready(function () {
                             dataType: "json",
                             success: function( oDataReceived ) {
                                 tracking = oDataReceived.albums;
-                                console.log("tracking albums recom", tracking);
                             }
                         });
 
@@ -884,6 +918,8 @@ $(document).ready(function () {
         });
     }
 
+    ///////////////////// PROCEDIMIENTO QUE REALIZA UNA QUERY PARA MOSTRARNOS LAS CANCIONES /////////////////////////
+    ///////////////////// DE UN ÁLBUM DEL APARTADO ALBUMES RELACIONADOS CON LA BÚSQUEDA /////////////////////////////
 
     function carregaAlbum(album, albumImage){
 
@@ -895,7 +931,7 @@ $(document).ready(function () {
             url: sGetTracksFromAlbum,
             dataType: "json",
             success: function( oDataReceived ) {
-                console.log("Albums Tracks", oDataReceived);
+
                 tracksFromAlbum = oDataReceived.items;
 
                 var oCurrentTrack;
@@ -937,7 +973,7 @@ $(document).ready(function () {
                             $(".sp-player").remove();
                             insertarPlaylist(tracking.id,tracking, tracking.artists[0].name, albumImage, album.name, null);
                             getPlayerNormal(tracking, albumImage, album.name, null, function (player) {
-                                console.log('got the player');
+
                                 $("#all_resultsList").append(player);
 
                             });
@@ -964,6 +1000,9 @@ $(document).ready(function () {
         });
     }
 
+    ///////////////////// PROCEDIMIENTO QUE REALIZA UNA QUERY PARA MOSTRARNOS LAS CANCIONES /////////////////////////
+    ///////////////////// DE UN ÁLBUM DEL APARTADO ALBUMES RELACIONADOS CON EL ARTISTA /////////////////////////////
+
     function carregaAlbumArt(album, albumImage){
 
         var $albumSongsArt = $("#albumSongsArt");
@@ -975,7 +1014,7 @@ $(document).ready(function () {
             url: sGetTracksFromAlbum,
             dataType: "json",
             success: function( oDataReceived ) {
-                console.log("Albums Tracks", oDataReceived);
+
                 tracksFromAlbum = oDataReceived.items;
 
                 var oCurrentTrack;
@@ -1017,7 +1056,7 @@ $(document).ready(function () {
                             $(".sp-player").remove();
                             insertarPlaylist(tracking.id,tracking, tracking.artists[0].name, albumImage, album.name, null);
                             getPlayerNormal(tracking, albumImage, album.name, null, function (player) {
-                                console.log('got the player');
+
                                 $("#all_resultsList").append(player);
 
                             });
@@ -1051,6 +1090,9 @@ $(document).ready(function () {
         });
     }
 
+    ///////////////////// PROCEDIMIENTO QUE REALIZA UNA QUERY PARA MOSTRARNOS LAS CANCIONES /////////////////////////
+    ///////////////////// DE UN ÁLBUM DEL APARTADO ALBUMES DE ROCK TOP EN LA HOME /////////////////////////////
+
     function carregaAlbumRecomend(album, albumImage){
 
         var $albumsRecomend = $("#albumsRecomend");
@@ -1062,7 +1104,7 @@ $(document).ready(function () {
             url: sGetTracksFromAlbum,
             dataType: "json",
             success: function( oDataReceived ) {
-                console.log("Albums Tracks", oDataReceived);
+
                 tracksFromAlbum = oDataReceived.items;
 
                 var oCurrentTrack;
@@ -1102,10 +1144,10 @@ $(document).ready(function () {
 
                         adiv.on("click", function () {
                             $(".sp-player").remove();
-                            console.log("aqui mirem la data el buto de track",oCurrentTrack);
+
                             insertarPlaylist(tracking.id,tracking, tracking.artists[0].name, albumImage, album.items[0].name, null);
                             getPlayerNormal(tracking, albumImage, album.items[0].name, null, function (player) {
-                                console.log('got the player');
+
                                 $("#all_resultsList").append(player);
 
                             });
@@ -1138,6 +1180,7 @@ $(document).ready(function () {
         });
     }
 
+    ///////////////////// PROCEDIMIENTO QUE INSERTA TODOS LOS TRACKS REPRODUCIDOS EN EL APARTADO PLAYLIST /////////////////////////
 
     function insertarPlaylist ( id, tracking, artistName, albumImage, album_name, favorito) {
         if (typeof(Storage) !== "undefined") {
@@ -1147,17 +1190,18 @@ $(document).ready(function () {
 
             if(duplicate == false) {
                 localStorage.setItem(localStorage.length.toString(), data);
-                console.log("Elemento añadido en localStorage", data);
             }
-        }else {
-            console.log("El navegador no admite uso de localStorage");
         }
     }
+
+    ///////////////////// PROCEDIMIENTO QUE BORRA EL TRACK SELECCIONADO EN EL APARTADO PLAYLIST /////////////////////////
 
     function removeTrackFromPlaylist (id) {
         localStorage.removeItem(id.toString());
     }
 
+
+    ////////////////////EVENTO PARA EL BOTON DEL APARTADO PLAYLIST/////////////////////////////
     $("#playlistLink").on("click", function () {
         var tipo = $("#homeTop");
 
@@ -1182,6 +1226,7 @@ $(document).ready(function () {
 
     });
 
+    ////////////////////EVENTO PARA EL BOTON DEL APARTADO FAVORITOS/////////////////////////////
     $("#playlistLinkFav").on("click", function () {
         var tipo = $("#homeTop");
 
@@ -1209,6 +1254,8 @@ $(document).ready(function () {
 
     });
 
+    ///////////////////// FUNCIÓN QUE CONTROLA SI EL TRACK REPRODUCIDO ESTA EN EL APARTADO PLAYLIST /////////////////////////
+
     function duplicatsStorage( id ){
 
         if (typeof(Storage) !== "undefined") {
@@ -1217,8 +1264,7 @@ $(document).ready(function () {
 
                 aux = localStorage.getItem(localStorage.key(i));
                 data = aux.split("~");
-                console.log("aux", data[4]);
-                console.log("id", id);
+
                 if(data[4] == id){
                     return i;
                 }
@@ -1226,6 +1272,8 @@ $(document).ready(function () {
             return false;
         }
     }
+
+    ///////////////////// PROCEDIMIENTO QUE CARGA EL APARTADO PLAYLIST E INTRODUCE LOS DATOS ALMACENADOS EN LAS BOXES /////////////////////////
 
     function carregaPlaylist ($tipo) {
 
@@ -1243,7 +1291,7 @@ $(document).ready(function () {
             for (var i = localStorage.length-1; i >= 0 ; i--) {
                 aux = localStorage.getItem(localStorage.key(i));
                 data = aux.split("~");
-                console.log("Hem entrat a playlist", data);
+
                 var image =  data[0];
 
                 if (!image) {
@@ -1348,6 +1396,7 @@ $(document).ready(function () {
             $('#playlistSongs').append(sItems);
     }
 
+    ///////////////////// PROCEDIMIENTO QUE CARGA EL APARTADO FAVORITOS E INTRODUCE LOS DATOS ALMACENADOS EN LAS BOXES /////////////////////////
 
     function carregaFavoritos ($tipo) {
 
@@ -1467,6 +1516,8 @@ $(document).ready(function () {
     }
     }
 
+    ///////////////////// PROCEDIMIENTO QUE NOS GENERA EL PLAYER CON LA CANCIÓN SELECCIONADA Y LA INFO DE ESTA /////////////////////////
+
     function getPlayerNormal(song, albumImage, albumName, artistName, callback) {
         var curSong = 0;
         var audio = null;
@@ -1481,6 +1532,7 @@ $(document).ready(function () {
 
         showCurSong(false);
         callback(player);
+
         function filterSongs(songs) {
             var out = [];
 
@@ -1493,9 +1545,10 @@ $(document).ready(function () {
                     out.push(song);
                 }
             });
-            console.log("out: ", out);
+
             return out;
         }
+
 
         function showSong(song, autoplay) {
             if(!albumImage) {
@@ -1513,7 +1566,7 @@ $(document).ready(function () {
             $(player).find(".sp-album").text(albumName);
 
             audio.attr('src', song.preview_url);
-            console.log("Estem dins de show song");
+
             if (autoplay) {
                 audio.get(0).play();
             }
@@ -1543,6 +1596,7 @@ $(document).ready(function () {
             } else {
             }
         }
+
         function getRandomIntInclusive(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
@@ -1561,8 +1615,8 @@ $(document).ready(function () {
             }
         }
 
+
         function togglePausePlay() {
-            console.log('tpp', audio.get(0).paused);
             if (audio.get(0).paused) {
                 audio.get(0).play();
             } else {
@@ -1571,7 +1625,6 @@ $(document).ready(function () {
         }
 
         function PauseAll() {
-            console.log('tpp', audio.get(0).paused);
             if (audio.get(0).paused) {
 
             } else {
@@ -1613,7 +1666,6 @@ $(document).ready(function () {
             });
 
             audio.on('ended', function() {
-                console.log('ended');
                 nextSong();
             });
 
@@ -1655,11 +1707,8 @@ $(document).ready(function () {
             main.append(controls);
 
             main.bind('destroyed', function() {
-                console.log('player destroyed');
                 audio.pause();
             });
-
-            console.log('creem el player');
             return main;
         }
         $(document).on('click', '#trackBoxes', function(e) {

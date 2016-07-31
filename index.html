@@ -95,9 +95,7 @@
     </paper-header-panel >
     <paper-header-panel id="cosMain" main mode="standard">
         <paper-toolbar id = "primer_toolbar" aria-labelledby="paper-toolbar-label-4110" role="toolbar" class="tall x-scope paper-toolbar-0" style="width: 100%; margin-right: -10%">
-            <div id="coverfoto" class="cover">
-
-            </div>
+            <paper-icon-button id = "menubut" icon="menu" paper-drawer-toggle></paper-icon-button>
         </paper-toolbar>
         <paper-toolbar  id="toolbar_pestanyes" style="display:none;" aria-labelledby="paper-toolbar-label-4110" role="toolbar" class="tall x-scope paper-toolbar-0" style="width: 100%; margin-right: -10%">
 
@@ -106,7 +104,7 @@
              <paper-tab class="tabs">Albums</paper-tab>
              <paper-tab class="tabs">Tracks</paper-tab>
         </paper-tabs>
-        <paper-icon-button id = "menubut" icon="menu" paper-drawer-toggle></paper-icon-button>
+            <paper-icon-button id = "menubut" icon="menu" paper-drawer-toggle></paper-icon-button>
       </paper-toolbar>
 
         <iron-pages id="search" selected="0" style="display:none;">
@@ -160,7 +158,7 @@
             <div class='simArtistBox'>
                 <legend><h1 id="nomArtista"></h1></legend>
 
-                <paper-card id="bioContent" heading="Bio" style="background-color: dimgray; height:50%;width:50%;">
+                <paper-card id="bioContent" heading="Bio" style="background-color: rgba(65, 65, 65, 1); height:50%;width:80%;">
 
                     <div class="card-actions" >
                         <p id="infoArtist"></p>
