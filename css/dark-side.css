@@ -1,0 +1,539 @@
+/*
+ * PolymerThemes v1.0.3
+ * Homepage: https://polymerthemes.com
+ * Copyright 2015 Polymer Themes
+ * Licensed under BSD
+ * Based on Polymer: http://www.polymer-project.org/
+ * Compatible with Polymer 1.0
+ */
+
+@import url(https://fonts.googleapis.com/css?family=Questrial);
+html { -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; font-size: 16px;} 
+
+
+
+paper-drawer-panel {
+  display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(33,33,33);
+        color:#0aa7e8;
+        overflow: hidden;
+        font-family: 'Questrial', sans-serif;
+}
+
+iron-selector.paper-drawer-panel > #drawer.paper-drawer-panel {
+  position: absolute;
+        top: 0;
+        left: 0;
+
+    background-color: rgb(66, 75, 75);
+
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+}
+
+.transition.paper-drawer-panel > #drawer.paper-drawer-panel {
+  transition: -webkit-transform ease-in-out 0.3s, width ease-in-out 0.3s, visibility 0.3s;
+        transition: transform ease-in-out 0.3s, width ease-in-out 0.3s, visibility 0.3s;
+}
+
+.right-drawer.paper-drawer-panel > #drawer.paper-drawer-panel {
+  left: auto;
+        right: 0;
+}
+
+iron-selector.paper-drawer-panel > #main.paper-drawer-panel {
+  position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+}
+
+.transition.paper-drawer-panel > #main.paper-drawer-panel {
+  transition: left ease-in-out 0.3s, padding ease-in-out 0.3s;
+}
+
+.right-drawer.paper-drawer-panel > #main.paper-drawer-panel {
+  left: 0;
+}
+
+.right-drawer.transition.paper-drawer-panel > #main.paper-drawer-panel {
+  transition: right ease-in-out 0.3s, padding ease-in-out 0.3s;
+}
+
+#main.paper-drawer-panel  > [main] {
+  height: 100%;
+}
+
+#drawer.paper-drawer-panel  > [drawer] {
+  height: 100%;
+}
+
+#scrim.paper-drawer-panel {
+  position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity ease-in-out 0.38s, visibility ease-in-out 0.38s;
+        background-color: rgba(0, 0, 0, 0.5);
+}
+
+.narrow-layout.paper-drawer-panel > #drawer.paper-drawer-panel {
+  will-change: transform;
+}
+
+.narrow-layout.paper-drawer-panel > #drawer.iron-selected.paper-drawer-panel {
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.right-drawer.narrow-layout.paper-drawer-panel > #drawer.iron-selected.paper-drawer-panel {
+  box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.narrow-layout.paper-drawer-panel > #drawer.paper-drawer-panel  > [drawer] {
+  border: 0;
+}
+
+.left-drawer.narrow-layout.paper-drawer-panel > #drawer.paper-drawer-panel:not(.iron-selected) {
+  -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
+}
+
+.right-drawer.narrow-layout.paper-drawer-panel > #drawer.paper-drawer-panel:not(.iron-selected) {
+  left: auto;
+        visibility: hidden;
+
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+}
+
+.right-drawer.narrow-layout.dragging.paper-drawer-panel > #drawer.paper-drawer-panel:not(.iron-selected), .right-drawer.narrow-layout.peeking.paper-drawer-panel > #drawer.paper-drawer-panel:not(.iron-selected) {
+  visibility: visible;
+}
+
+.narrow-layout.paper-drawer-panel > #main.paper-drawer-panel {
+  padding: 0;
+}
+
+.right-drawer.narrow-layout.paper-drawer-panel > #main.paper-drawer-panel {
+  left: 0;
+        right: 0;
+}
+
+.narrow-layout.paper-drawer-panel > #main.paper-drawer-panel:not(.iron-selected) > #scrim.paper-drawer-panel, .dragging.paper-drawer-panel > #main.paper-drawer-panel > #scrim.paper-drawer-panel {
+  visibility: visible;
+}
+
+.narrow-layout.paper-drawer-panel > #main.paper-drawer-panel > *.paper-drawer-panel {
+  margin: 0;
+        min-height: 100%;
+        left: 0;
+        right: 0;
+
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+}
+
+iron-selector.paper-drawer-panel:not(.narrow-layout) #main.paper-drawer-panel  [paper-drawer-toggle] {
+  display: none;
+}
+
+paper-button.fancy {
+  background: green;
+  color: yellow;
+}
+
+paper-button.fancy:hover {
+  background: lime;
+}
+
+paper-button[disabled],
+paper-button[toggles][active] {
+  background: red;
+}
+
+.simArtistBox{
+    width: 100%;
+    height:100%;
+    border-image: fill;
+    border-color: #00acc1;
+    padding: 20px;
+
+    float:left;
+}
+.similars{
+    width: 100%;
+    height:100%;
+    float:left;
+
+}
+
+.actions{
+
+    z-index: 9;
+
+}
+
+
+#Boxes{
+    text-transform: none;
+    margin: 10px;
+    position: relative;
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    background-color: rgb(66, 75, 75);
+}
+
+#albumBoxes{
+    text-transform: none;
+    margin: 10px;
+    position: relative;
+    width: 200px;
+    height: 250px;
+    overflow: hidden;
+    background-color: rgb(66, 75, 75);
+}
+
+#trackBoxes{
+    text-transform: none;
+    margin: 10px;
+    position: relative;
+    width: 200px;
+    height: 220px;
+    overflow: hidden;
+    background-color: rgb(66, 75, 75);
+}
+
+div .card-content{
+    height: 40px;
+    margin-top: -5%;
+    margin-bottom: 0%;
+    overflow: hidden;
+}
+
+.playlistsCard{
+
+}
+
+.cropPlaylists{
+    width: 200px;
+    height: 150px;
+    overflow: hidden;
+}
+
+.cropPlaylists img{
+    padding-top: 0px;
+    height: auto;
+    min-height: 150px;
+    max-height:200px;
+    width: auto;
+    min-width: 200px;
+    left: 50%;
+    top: 50%;
+    position: relative;
+    transform: translate(-50%, -50%);
+
+
+
+}
+
+input text{
+    color: green;
+}
+
+.crop{
+    width: 200px;
+    height: 150px;
+    overflow: hidden;
+}
+
+.crop img{
+    padding-top: 0px;
+    min-height: 150px;
+    width: 200px;
+}
+
+.cropAlbums{
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+}
+
+.cropAlbums img{
+    padding-top: 0px;
+    height: 200px;
+    width: auto;
+}
+
+#artist{
+    height: 20px;
+    -webkit-text-fill-color: #000;
+}
+
+.paper-item-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+paper-item a{
+    color: inherit;
+}
+
+.logoMusic{
+    width: 100%;
+    height: 80%;
+
+
+}
+
+.logoMusic2{
+    padding-top: 100px;
+    width: auto;
+    height: auto;
+}
+
+.logoMusic img{
+    width: 200px;
+    height: 130px;
+    padding-top: 5px;
+
+}
+
+#go{
+    padding-top: 0%;
+    height: 24px;
+}
+.sp-player{
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+
+.sp-album-art{
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+
+.sp-info{
+    padding-left: 20%;
+    padding-top: 10%;
+}
+
+.reproductor{
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    background-color: rgb(66, 75, 75);
+}
+
+#playero{
+    padding-left: 20%;
+    padding-top: 10%;
+    width: 100%;
+    height: 100%;
+}
+#toolbarCapsal {
+   width: 100%;
+
+   overflow: hidden;
+}
+
+#cosMain {
+    width: 100%;
+    padding: 0%;
+}
+.cover {
+    margin-left: 0px;
+    padding-left: 0px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.input-group{
+    padding-top: 5px;
+    width: 100%;
+    z-index: 2;
+
+}
+
+.menubut{
+    width: 100%;
+}
+
+.fotocover{
+
+    width: 100%;
+    height: auto;
+}
+
+#pestanyes{
+    background: rgba(130, 160, 190, 0.0);
+    width: 100%;
+    margin-bottom: 0%;
+}
+#toolbar_pestanyes{
+    width: 100%;
+    margin-bottom: 0%;
+    overflow: hidden;
+}
+
+#pestanyesArtista{
+    background: rgba(130, 160, 190, 0.0);
+    width: 100%;
+    margin-bottom: 0%;
+
+}
+
+#toolbar_pestanyesArtista{
+    width: 100%;
+    margin-bottom: 0%;
+    overflow: hidden;
+}
+
+.tabs {
+    margin-left: 10px;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+
+.topBar{
+    width: 100%;
+    height: auto;
+    margin: 0%;
+    padding: 0%;
+}
+
+.buttAtras{
+    float: right;
+    width: 64px;
+    height: 64px;
+    margin-top: -10px;
+    color: cornsilk;
+    background-size: 100%;
+
+}
+
+
+
+/*-------------scrollbar-custom----------------------*/
+#scrollbox3 {
+    overflow: auto;
+    min-height: 400px;
+    min-width: 400px;
+    padding: 0 0px;
+    border: 1px solid #b7b7b7;
+}
+
+.track3 {
+    width: 10px;
+    background: rgba(0, 0, 0, 0);
+    margin-right: 2px;
+    border-radius: 10px;
+    -webkit-transition: background 250ms linear;
+    transition: background 250ms linear;
+}
+
+#customCardArtists{
+    margin: 10px;
+    position: relative;
+    width: 300px;
+    height: 300px;
+
+    background-color: rgb(66, 75, 75);
+}
+
+.customCardPlaylists{
+     margin: 10px;
+     padding: 0px;
+     width: 200px;
+     height: 200px;
+ }
+
+.customCardTracks{
+     margin: 10px;
+     padding: 0px;
+     width: 200px;
+     height: 220px;
+ }
+
+.customCardAlbums{
+    margin: 10px;
+    padding: 0px;
+    width: 200px;
+    height: 250px;
+}
+
+.customCardP{
+    margin: 0px;
+    padding: 0px;
+    left:-10px;
+    top: -10px;
+    width: 100%;
+    height: 100%;
+
+}
+
+
+.track3:hover,
+.track3.dragging {
+    background: #d9d9d9; /* Browsers without rgba support */
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.handle3 {
+    width: 7px;
+    right: 0;
+    background: #999;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 7px;
+    -webkit-transition: width 250ms;
+    transition: width 250ms;
+}
+
+.track3:hover .handle3,
+.track3.dragging .handle3 {
+    width: 10px;
+}
+/*-------------------------------------------*/
+
+paper-icon-button.fancy {
+
+
+}
+
+
+paper-icon-button.fancy:hover {
+    color: #ff8f00;
+}
+
+paper-card {
+
+    --paper-card-background-color:{
+        background-color: black;
+    };
+}
+
+paper-header-panel {
+    --paper-header-panel-standard-container: {
+        border: 100px solid green;
+    };
+
+    --paper-header-panel-seamed-container: {
+        border: 1px solid blue;
+    };
+
+    --paper-header-panel-waterfall-tall-container: {
+        background-color: #f34550;
+
+    };
+}
